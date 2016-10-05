@@ -4,8 +4,14 @@
 <head>
     <title>Hangman!</title>
     <script>
-        var pickWord = function () {
-            var words = [
+        //when the page loads
+        window.onload = function () {
+
+            /*define the functions*/
+
+            //define step 1
+            var pickWord = function () {
+                var words = [
                 "null",
                 "pointer",
                 "javascript",
@@ -13,64 +19,86 @@
                 "amazing",
                 "pancake"
             ];
-            console.log(words);
-            return words[Math.floor(Math.random() * words.length)];
+                console.log(words);
+                return words[Math.floor(Math.random() * words.length)];
 
-        };
-        var setupAnswerArray = function (word) {
-            var answerArray = [];
-            for (var i = 0; i < word.length; i++) {
-                answerArray[i] = "_";
-            }
-            // console.log(answerArray);
-            return answerArray;
-        };
-        var showPlayerProgress = function (answerArray) {
-            alert(answerArray.join(" "));
-        };
-        var getGuess = function () {
-            return prompt("Guess a letter, or click Cancel to stop playing.");
-        };
-        var updateGameState = function (guess, word, answerArray) {
-            var appearances = 0;
-            for (var j = 0; j < word.length; j++) { // iterate over length of the word
-                if (word[j] === guess) { // compare player guess with char
-                    answerArray[j] = guess; // update correct guess
-                    appearances++;
+            };
+            //define step 2
+            var setupAnswerArray = function (word) {
+                var answerArray = [];
+                for (var i = 0; i < word.length; i++) {
+                    answerArray[i] = "_";
                 }
-            }
-            // console.log(appearances);
-            return appearances;
-        };
-        var showAnswerAndCongratulatePlayer = function (answerArray) {
-            showPlayerProgress(answerArray);
-            alert("Good job! The answer was " + answerArray.join(""));
-        };
+                // console.log(answerArray);
+                return answerArray;
+            };
+            //define step 3
+            var showPlayerProgress = function (answerArray) {
+                document.getElementById("output").innerHTML = "So far you have: " + answerArray.join(" ");
+                console.log("So far you have: " + answerArray.join(" "));
+            };
 
-        var word = pickWord();
-        var answerArray = setupAnswerArray(word);
-        var remainingLetters = word.length;
+            //define step 5
+            var updateGameState = function (guess, word, answerArray) {
+                var appearances = 0;
+                for (var j = 0; j < word.length; j++) { // iterate over length of the word
+                    if (word[j] === guess) { // compare player guess with char
+                        answerArray[j] = guess; // update correct guess
+                        appearances++;
+                    }
+                }
+                // console.log(appearances);
+                return appearances;
+            };
+            //define step 6
+            var showAnswerAndCongratulatePlayer = function (answerArray, remainingLetters) {
+                showPlayerProgress(answerArray);
+                if (remainingLetters == 0) {
+                    document.getElementById("output").innerHTML = "Good job! The answer was " + answerArray.join(" ");
+                }
+            };
 
-        // main loop
-        while (remainingLetters > 0) {
-            showPlayerProgress(answerArray);
-            var guess = getGuess();
-            if (guess === null) {
-                break;
-            } else if (guess.length !== 1) {
-                alert("Please enter a single letter.");
-            } else {
-                var correctGuesses = updateGameState(guess, word, answerArray);
-                remainingLetters -= correctGuesses;
-            }
+
+            /*use the functions*/
+            var word = pickWord(); //use step 1
+            var answerArray = setupAnswerArray(word); //use step 2
+            var remainingLetters = word.length;
+
+
+            //define step 4
+            var getGuess = function () {
+                var guess = document.getElementById("userInput").value;
+                console.log(guess);
+                // main loop
+                while (remainingLetters > 0) {
+                    showPlayerProgress(answerArray); //use step 3
+
+                    return false;
+                    if (guess === null) {
+                        return false;
+                    } else if (guess.length !== 1) {
+                        document.getElementById("error").innerHTML = "Please enter a single letter.";
+                    } else {
+                        var correctGuesses = updateGameState(guess, word, answerArray); //use step 5
+                        remainingLetters -= correctGuesses;
+                        console.log(remainingLetters);
+                    }
+                }
+            };
+            showAnswerAndCongratulatePlayer(answerArray, remainingLetters); //use step 6
         }
-
-        showAnswerAndCongratulatePlayer(answerArray);
     </script>
 </head>
 
 <body>
     <h1>Hangman!</h1>
+    <div class="input-container">
+        <p>Guess a letter, or click Cancel to stop playing.</p>
+        <input type="text" value="" placeholder="Make your guess" id="userInput">
+        <button type="submit" id="submit" onclick="getGuess()">Guess</button>
+    </div>
+    <div id="output">here</div>
+    <div id="error"></div>
 
 </body>
 
