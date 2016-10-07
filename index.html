@@ -3,39 +3,77 @@
 
 <head>
     <title>Hangman!</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        #output,
+        #error {
+            margin-top: 1rem;
+        }
+
+        #error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hangman!</h1>
+    <div class="input-container">
+        <p>Guess a letter to play.</p>
+        <input type="text" maxlength="1" value="" placeholder="Make your guess" id="userInput">
+        <button type="submit" id="submit">Guess</button>
+    </div>
+    <div id="output"></div>
+    <div id="error"></div>
     <script>
         //when the page loads
         window.onload = function () {
+            /*global variables*/
+            var oldRemainingLetters = "";
 
             /*define the functions*/
 
             //define step 1
             var pickWord = function () {
                 var words = [
-                "null",
-                "pointer",
-                "javascript",
-                "monkey",
-                "amazing",
-                "pancake"
-            ];
-                console.log(words);
+                    "null",
+                    "pointer",
+                    "javascript",
+                    "monkey",
+                    "amazing",
+                    "pancake"
+                ];
                 return words[Math.floor(Math.random() * words.length)];
-
             };
+            var word = pickWord(); //use step 1
+            var remainingLetters = word.length;
+            var oldRemainingLetters = word.length;
             //define step 2
             var setupAnswerArray = function (word) {
                 var answerArray = [];
                 for (var i = 0; i < word.length; i++) {
                     answerArray[i] = "_";
                 }
-                // console.log(answerArray);
                 return answerArray;
             };
             //define step 3
-            var showPlayerProgress = function (answerArray) {
-                document.getElementById("output").innerHTML = "So far you have: " + answerArray.join(" ");
-                console.log("So far you have: " + answerArray.join(" "));
+            var showPlayerProgress = function (answerArray, remainingLetters) {
+                if (oldRemainingLetters != remainingLetters) {
+                    if (remainingLetters > 0) {
+                        document.getElementById("output").innerHTML = "So far you have: <b>" + answerArray.join(" ") + "</b>";
+                        document.getElementById("error").innerHTML = "";
+                    } else {
+                        document.getElementById("output").innerHTML = "Good job! The answer was <br /><b>" + answerArray.join(" ") + "</b>";
+                    }
+                } else {
+                    document.getElementById("output").innerHTML = "So far you have: <b>" + answerArray.join(" ") + "</b>";
+                    document.getElementById("error").innerHTML = "Answer incorrect";
+                }
+                oldRemainingLetters = remainingLetters;
             };
 
             //define step 5
@@ -47,33 +85,20 @@
                         appearances++;
                     }
                 }
-                // console.log(appearances);
                 return appearances;
-            };
-            //define step 6
-            var showAnswerAndCongratulatePlayer = function (answerArray, remainingLetters) {
-                showPlayerProgress(answerArray);
-                if (remainingLetters == 0) {
-                    document.getElementById("output").innerHTML = "Good job! The answer was " + answerArray.join(" ");
-                }
             };
 
 
             /*use the functions*/
-            var word = pickWord(); //use step 1
-            var answerArray = setupAnswerArray(word); //use step 2
-            var remainingLetters = word.length;
 
+            var answerArray = setupAnswerArray(word); //use step 2
 
             //define step 4
             var getGuess = function () {
                 var guess = document.getElementById("userInput").value;
-                console.log(guess);
                 // main loop
                 while (remainingLetters > 0) {
-                    showPlayerProgress(answerArray); //use step 3
 
-                    return false;
                     if (guess === null) {
                         return false;
                     } else if (guess.length !== 1) {
@@ -81,25 +106,15 @@
                     } else {
                         var correctGuesses = updateGameState(guess, word, answerArray); //use step 5
                         remainingLetters -= correctGuesses;
-                        console.log(remainingLetters);
                     }
+                    showPlayerProgress(answerArray, remainingLetters); //use step 3
+                    return false;
                 }
+                document.getElementById("userInput").value('');
             };
-            showAnswerAndCongratulatePlayer(answerArray, remainingLetters); //use step 6
+            document.getElementById("submit").addEventListener('click', getGuess);
         }
     </script>
-</head>
-
-<body>
-    <h1>Hangman!</h1>
-    <div class="input-container">
-        <p>Guess a letter, or click Cancel to stop playing.</p>
-        <input type="text" value="" placeholder="Make your guess" id="userInput">
-        <button type="submit" id="submit" onclick="getGuess()">Guess</button>
-    </div>
-    <div id="output">here</div>
-    <div id="error"></div>
-
 </body>
 
 </html>
